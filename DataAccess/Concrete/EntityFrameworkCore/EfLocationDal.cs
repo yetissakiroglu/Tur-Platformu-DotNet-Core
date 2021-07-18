@@ -97,6 +97,7 @@ namespace DataAccess.Concrete.EntityFrameworkCore
             using (var context = new AppDbContext())
             {
                 var cntxt = context.Locations.AsQueryable();
+
                 if (!string.IsNullOrEmpty(text))
                 {
                     cntxt = cntxt.Where(q => q.title.Contains(text));

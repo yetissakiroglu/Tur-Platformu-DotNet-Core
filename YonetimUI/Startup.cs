@@ -1,4 +1,6 @@
+using Autofac;
 using Business.Dependecy_Resolves.Custom_Extensions;
+using Business.Dependecy_Resolves.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -43,6 +45,13 @@ namespace YonetimUI
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+      
+            builder.RegisterModule<FileManagerModule>();
+            builder.RegisterModule<FileSystemWrapperModule>();
         }
     }
 }

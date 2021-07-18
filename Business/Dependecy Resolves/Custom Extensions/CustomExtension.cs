@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Business.Concrete.Managers;
+using Core.Services.FileManager;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +19,7 @@ namespace Business.Dependecy_Resolves.Custom_Extensions
             services.AddScoped<ILocationService, LocationManager>();
             services.AddScoped<ILocationDal, EfLocationDal>();
 
-       
+
 
         }
     }

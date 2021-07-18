@@ -12,14 +12,15 @@ namespace Entities.Concrete
     public class Location: IEntity
     {
         [Key]
+        [Display(Name = "Lokasyon Id")]
         public int location_Id { get; set; } //lokasyon id
+        [Display(Name = "Üst Lokasyon Id")]
         public int topLocation_Id { get; set; }
-
         [Display(Name = "Lokasyon Başlığı")]
         public string title { get; set; } //lokasyon başlık
         [Display(Name = "Lokasyon Anahtar Kelimleri")]
         public string keywords { get; set; } // keywords seo açıklama
-        [Display(Name = "Lokasyon Anahtar Kelimleri")]
+        [Display(Name = "Lokasyon Description")]
         public string description { get; set; } // lokasyon seo açıklama
         public string content { get; set; } // lokasyon içerik
         public string imgPath { get; set; } // lokasyon kapak resmi

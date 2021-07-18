@@ -24,7 +24,7 @@
                     </select>
                 </div>
                 <div class="col-md-4">
-                    @Html.DropDownListFor(model => model.RegionId, (IEnumerable<SelectListItem>)Model.TopLocationListItem, new { @class = "select kategori_kriter form-control input-sm" })
+                    @Html.DropDownListFor(model => model.topLocation_Id, (IEnumerable<SelectListItem>)Model.TopLocationListItem, new { @class = "select kategori_kriter form-control input-sm" })
                 </div>
                 <div class="col-md-5">
                     <input asp-for="@Model.Search" name="metin" id="metin" placeholder=" Arama ... " class="form-control input-sm">
@@ -58,6 +58,9 @@
                                 @Html.DisplayNameFor(model => model.Location.title)
                             </th>
                             <th>
+                                @Html.DisplayNameFor(model => model.Location.imgPath)
+                            </th>
+                            <th>
                                 @Html.DisplayNameFor(model => model.Location.topLocation_Id)
                             </th>
                             <th>
@@ -70,52 +73,53 @@
                     <tbody>
                         @foreach (var item in Model.Locations)
                         {
-                            <tr>
-                                <td class="text-center">
-                                    <small class="small font-weight-bold">  @Html.DisplayFor(modelItem => item.location_Id)</small>
-                                </td>
+                        <tr>
+                            <td class="text-center">
+                                <small class="small font-weight-bold">  @Html.DisplayFor(modelItem => item.location_Id)</small>
+                            </td>
 
-                                <td class="text-center">
-                                    <h6 class="m-0 font-weight-bold text-primary">
-                                        <a asp-action="Edit" asp-route-Id="@item.location_Id" class="editable_date editable-click editable">
-                                            @Html.DisplayFor(modelItem => item.title)
-                                        </a>
-                                    </h6>
-                                </td>
-
-                                <td class="text-center">
-                                    <span class="btn dark btn-sm red">
+                            <td class="text-center">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <a asp-action="Edit" asp-route-Id="@item.location_Id" class="editable_date editable-click editable">
                                         @Html.DisplayFor(modelItem => item.title)
-                                    </span>
-                                </td>
-
-
-                                <td class="text-center">
-                                    @using (Html.BeginForm("Active", "Location", new { active = @item.state, id = @item.location_Id }, FormMethod.Post))
-                                    {
-                                        @if (item.state == true)
-                                        {
-                                            <button type="submit" title="Status" class="btn dark btn-sm yellow">
-                                                @item.state
-                                            </button>
-                                        }
-                                        @if (item.state == false)
-                                        {
-                                            <button type="submit" title="Status" class="btn dark btn-sm red">
-                                                @item.state
-                                            </button>
-                                        }
-
-                                    }
-                                </td>
-                                <td class="text-center">
-                                    <a href="javascript:;" data-target="/Location/ViewPreview/@item.location_Id" class="btn btn-outline btn-sm purple detail">
-                                        <i class="fa fa-eye"></i> İncele
                                     </a>
-                                    @Html.ActionLink("Düzenle", "Edit", new { id = item.location_Id }, new { @class = "btn btn-outline dark btn-sm black " }) |
-                                    @Html.ActionLink("Sil", "Delete", new { id = item.location_Id }, new { @class = "btn btn-outline btn-circle dark btn-sm" })
-                                </td>
-                            </tr>
+                                </h6>
+                            </td>
+                            <td class="text-center">
+                               <img src="/images/lokasyon/thumb/@Html.DisplayFor(modelItem => item.imgPath)" class="img-responsive" width="50" />
+                            </td>
+
+                            <td class="text-center" TopLocation="@item.topLocation_Id">
+                               
+                            </td>
+
+
+                            <td class="text-center">
+                                @using (Html.BeginForm("Active", "Location", new { active = @item.state, id = @item.location_Id }, FormMethod.Post))
+                                {
+                                    @if (item.state == true)
+                                    {
+                                        <button type="submit" title="Status" class="btn dark btn-sm yellow">
+                                            @item.state
+                                        </button>
+                                    }
+                                    @if (item.state == false)
+                                    {
+                                        <button type="submit" title="Status" class="btn dark btn-sm red">
+                                            @item.state
+                                        </button>
+                                    }
+
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a href="javascript:;" data-target="/Location/ViewPreview/@item.location_Id" class="btn btn-outline btn-sm purple detail">
+                                    <i class="fa fa-eye"></i> İncele
+                                </a>
+                                @Html.ActionLink("Düzenle", "Edit", new { id = item.location_Id }, new { @class = "btn btn-outline dark btn-sm black " }) |
+                                @Html.ActionLink("Sil", "Delete", new { id = item.location_Id }, new { @class = "btn btn-outline btn-circle dark btn-sm" })
+                            </td>
+                        </tr>
                         }
                     </tbody>
 

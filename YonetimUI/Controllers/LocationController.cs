@@ -11,14 +11,19 @@ using Mapster;
 using Core.Extensions;
 using Core.Entities.Concrete;
 using Core.Utilities.Messages;
+using Core.Services.FileManager;
+using Core.Enums;
 
 namespace YonetimUI.Controllers
 {
     public class LocationController : Controller
     {
         ILocationService _locationService;
-        public LocationController(ILocationService locationService)
+        private IFileManager _fileManager;
+
+        public LocationController(IFileManager fileManager, ILocationService locationService)
         {
+            _fileManager = fileManager;
             _locationService = locationService;
         }
 
@@ -36,6 +41,8 @@ namespace YonetimUI.Controllers
                 var locations = _locationService.ListLocationPagingByTopLocationIdAndByTitle(text, locationId, page, pageSize);
                 if (locations.Success)
                 {
+
+
                     var models = new LocationViewModel()
                     {
                         title = "Lokasyonlar",
@@ -46,6 +53,10 @@ namespace YonetimUI.Controllers
                             CurrentPage = page,
                             ItemsPerPage = pageSize,
                             TotalItems = _locationService.CountLocationByTopLocationId(locationId).Data
+                        },
+                        TopLocationViewModelHelper = new TopLocationViewModelHelper()
+                        {
+                            Locations = locations.Data,
                         }
                     };
 
@@ -80,11 +91,11 @@ namespace YonetimUI.Controllers
             {
                 TempData.Put("message", new ResultMessage()
                 {
-                    Title ="Hata",
-                    Message = "Sistem Hatası Oluştur. Tekrar deneyiniz.",
+                    Title = "Hata",
+                    Message = "Sistem Hatası Oluştu. Tekrar deneyiniz." + e,
                     Css = "alert-warning",
                 });
-                return View();
+                return View("_message");
             }
         }
 
@@ -94,13 +105,15 @@ namespace YonetimUI.Controllers
             LocationViewModel model = new LocationViewModel()
             {
                 title = "Yeni Lokasyon Ekleme Bölümü",
-                //TopLocationListItem = new SelectList(_locationService.ListLocation().Data, "location_Id", "title", " -- Seçim Yapınız -- "),
+                TopLocationListItem = new SelectList(_locationService.ListLocation().Data, "location_Id", "title", " -- Seçim Yapınız -- "),
                 Location = new Location(),
 
             };
 
             List<SelectListItem> note = new List<SelectListItem>();
             note.Insert(0, new SelectListItem() { Value = "0", Text = " --- Lokasyon Seçiniz --- " });
+            note.Insert(1, new SelectListItem() { Value = "-1", Text = " --- Üst Lokasyon -- " });
+
             foreach (var item in _locationService.ListLocation().Data)
             {
                 var selectList = new SelectListItem
@@ -119,19 +132,29 @@ namespace YonetimUI.Controllers
 
 
         [HttpPost]
-        public IActionResult Create(LocationViewModel model)
+        public async Task<IActionResult> Create(LocationViewModel viewmodel)
         {
+            if (!ModelState.IsValid) return View(viewmodel);
+
+            if (!_fileManager.ValidateUploadedFile(viewmodel.imgFile, UploadFileType.Image, 4, ModelState)) return View(viewmodel);
+
+            string fileName = await _fileManager.UploadFileAsync(viewmodel.imgFile, new List<string> { "images", "lokasyon", "thumb" });
+
             Location entity = new Location()
             {
-               location_Id=model.Location.location_Id,
-                title=model.Location.title,
-                description=model.Location.description,
-                image_Id = model.Location.image_Id,
-                row = model.Location.row,
-                state = model.Location.state,
-                IsChecked = model.Location.IsChecked,
+                location_Id = viewmodel.Location.location_Id,
+                topLocation_Id = viewmodel.Location.topLocation_Id,
+                title = viewmodel.Location.title,
+                description = viewmodel.Location.description,
+                image_Id = viewmodel.Location.image_Id,
+                row = viewmodel.Location.row,
+                state = viewmodel.Location.state,
+                IsChecked = viewmodel.Location.IsChecked,
+                imgPath = fileName,
             };
-      
+
+
+
 
             var result = _locationService.Create(entity);
             if (result.Success)
@@ -150,7 +173,7 @@ namespace YonetimUI.Controllers
                 return View("Index", result);
             }
 
-         
+
 
         }
 
