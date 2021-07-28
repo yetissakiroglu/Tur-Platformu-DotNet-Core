@@ -54,10 +54,12 @@ namespace YonetimUI.Controllers
                             ItemsPerPage = pageSize,
                             TotalItems = _locationService.CountLocationByTopLocationId(locationId).Data
                         },
+
                         TopLocationViewModelHelper = new TopLocationViewModelHelper()
                         {
                             Locations = locations.Data,
                         }
+
                     };
 
                     List<SelectListItem> note = new List<SelectListItem>();
@@ -98,7 +100,6 @@ namespace YonetimUI.Controllers
                 return View("_message");
             }
         }
-
         [HttpGet]
         public IActionResult Create()
         {
@@ -129,8 +130,6 @@ namespace YonetimUI.Controllers
             return View(model);
         }
 
-
-
         [HttpPost]
         public async Task<IActionResult> Create(LocationViewModel viewmodel)
         {
@@ -145,15 +144,15 @@ namespace YonetimUI.Controllers
                 location_Id = viewmodel.Location.location_Id,
                 topLocation_Id = viewmodel.Location.topLocation_Id,
                 title = viewmodel.Location.title,
+                keywords = viewmodel.Location.keywords,
                 description = viewmodel.Location.description,
+                content = viewmodel.Location.content,
                 image_Id = viewmodel.Location.image_Id,
                 row = viewmodel.Location.row,
                 state = viewmodel.Location.state,
                 IsChecked = viewmodel.Location.IsChecked,
                 imgPath = fileName,
             };
-
-
 
 
             var result = _locationService.Create(entity);
@@ -176,6 +175,70 @@ namespace YonetimUI.Controllers
 
 
         }
+
+        [HttpGet]
+        public IActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var modelview = _locationService.GetLocationByLocationId((int)id);
+
+            if (modelview.Data == null)
+            {
+                return NotFound();
+            }
+            if (modelview.Success)
+            {
+                var model = new LocationViewModel()
+                {
+                    Location = modelview.Data.Adapt<Location>(),
+                    title = modelview.Data.Adapt<Location>().title,
+                    message = modelview.Data.Adapt<Location>().title + " - adlı içerik güncelenecektir."
+                };
+
+                List<SelectListItem> note = new List<SelectListItem>();
+                note.Insert(0, new SelectListItem() { Value = "0", Text = " --- Lokasyon Seçiniz --- " });
+                note.Insert(1, new SelectListItem() { Value = "-1", Text = " --- Üst Lokasyon -- " });
+
+                // Get the top level parents
+                var listeler = _locationService.ListLocation().Data;
+                var parents = listeler.Where(x => x.topLocation_Id == -1);
+                foreach (var parent in parents)
+                {
+                    // Add SelectListItem for the parent
+                    note.Add(new SelectListItem()
+                    {
+                        Value = parent.location_Id.ToString(),
+                        Text = parent.title
+                    });
+                    // Get the child items associated with the parent
+                    var children = listeler.Where(x => x.topLocation_Id == parent.location_Id);
+
+                  // Add SelectListItem for each child
+                        foreach (var child in children)
+                        {
+                            note.Add(new SelectListItem()
+                            {
+                                Value = child.location_Id.ToString(),
+                                Text = string.Format("--{0}", child.title)
+                            });
+                        }
+                   
+                }
+   
+                model.TopLocationListItem = note;
+
+                return View(model);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+   
 
         [HttpGet]
         public IActionResult Delete(int? id)

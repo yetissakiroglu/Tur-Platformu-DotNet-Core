@@ -13,11 +13,12 @@ namespace YonetimUI.TagHelpers
 
     public class LocationHelpers : TagHelper
     {
-        public TopLocationViewModelHelper TopLocations { get; set; }
 
 
         [HtmlAttributeName("TopLocation")]
         public int TopLocation { get; set; }
+
+        public TopLocationViewModelHelper PageModel { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
@@ -28,7 +29,7 @@ namespace YonetimUI.TagHelpers
 
 
 
-            foreach (var item in TopLocations.Locations)
+            foreach (var item in PageModel.Locations)
             {
                 if (item.location_Id == TopLocation)
                 {
