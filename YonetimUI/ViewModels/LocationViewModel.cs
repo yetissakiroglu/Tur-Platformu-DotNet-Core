@@ -23,13 +23,11 @@ namespace YonetimUI.ViewModels
         public IEnumerable<SelectListItem> TopLocationListItem { get; set; }
         public PagingInfo PagingInfo { get; set; }
 
-        public TopLocationViewModelHelper TopLocationViewModelHelper { get; set; }
 
+        //Arama Kısmı
         public string Search { get; set; }
         public int Limit { get; set; }
-
-        //Bölge Idsi 
-        public int topLocation_Id { get; set; }
+        public int TopLocation_Id { get; set; }
 
     }
 }

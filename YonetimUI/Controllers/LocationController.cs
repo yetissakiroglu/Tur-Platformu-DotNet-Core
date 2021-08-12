@@ -13,6 +13,7 @@ using Core.Entities.Concrete;
 using Core.Utilities.Messages;
 using Core.Services.FileManager;
 using Core.Enums;
+using YonetimUI.Extensions;
 
 namespace YonetimUI.Controllers
 {
@@ -20,10 +21,12 @@ namespace YonetimUI.Controllers
     {
         ILocationService _locationService;
         private IFileManager _fileManager;
+        ITreeviewLocation _treeviewLocation;
 
-        public LocationController(IFileManager fileManager, ILocationService locationService)
+        public LocationController(IFileManager fileManager, ILocationService locationService, ITreeviewLocation treeviewLocation)
         {
-            _fileManager = fileManager;
+            _treeviewLocation = treeviewLocation;
+               _fileManager = fileManager;
             _locationService = locationService;
         }
 
@@ -54,13 +57,7 @@ namespace YonetimUI.Controllers
                             ItemsPerPage = pageSize,
                             TotalItems = _locationService.CountLocationByTopLocationId(locationId).Data
                         },
-
-                        TopLocationViewModelHelper = new TopLocationViewModelHelper()
-                        {
-                            Locations = locations.Data,
-                        }
-
-                    };
+                                           };
 
                     List<SelectListItem> note = new List<SelectListItem>();
                     note.Insert(0, new SelectListItem() { Value = "0", Text = " --- Lokasyon Seçiniz --- " });
@@ -106,26 +103,11 @@ namespace YonetimUI.Controllers
             LocationViewModel model = new LocationViewModel()
             {
                 title = "Yeni Lokasyon Ekleme Bölümü",
-                TopLocationListItem = new SelectList(_locationService.ListLocation().Data, "location_Id", "title", " -- Seçim Yapınız -- "),
                 Location = new Location(),
 
             };
 
-            List<SelectListItem> note = new List<SelectListItem>();
-            note.Insert(0, new SelectListItem() { Value = "0", Text = " --- Lokasyon Seçiniz --- " });
-            note.Insert(1, new SelectListItem() { Value = "-1", Text = " --- Üst Lokasyon -- " });
-
-            foreach (var item in _locationService.ListLocation().Data)
-            {
-                var selectList = new SelectListItem
-                {
-                    Text = item.title,
-                    Value = item.location_Id.ToString(),
-                };
-                note.Add(selectList);
-            }
-
-            model.TopLocationListItem = note;
+            model.TopLocationListItem = _treeviewLocation.TreeViewNote(_locationService.ListLocation().Data);
 
             return View(model);
         }

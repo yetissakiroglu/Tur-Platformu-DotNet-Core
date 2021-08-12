@@ -8,6 +8,7 @@
     <Folder Include="Models\" />
     <Folder Include="Handler\" />
     <Folder Include="Helpers\" />
+    <Folder Include="wwwroot\_tema\" />
     <Folder Include="wwwroot\tema\" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
     <PackageReference Include="Mapster" Version="7.2.0" />

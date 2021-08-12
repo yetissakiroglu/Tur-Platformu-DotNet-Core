@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using YonetimUI.Dependecy_Resolves.Extensions;
 
 namespace YonetimUI
 {
@@ -49,7 +50,7 @@ namespace YonetimUI
 
         public void ConfigureContainer(ContainerBuilder builder)
         {
-      
+            builder.RegisterModule<TreeviewLocationModule>();
             builder.RegisterModule<FileManagerModule>();
             builder.RegisterModule<FileSystemWrapperModule>();
         }
